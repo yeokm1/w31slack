@@ -49,7 +49,7 @@ I wrote a custom unit test framework as I could not find a testing framework for
 3. Issue a user token to yourself [https://api.slack.com/custom-integrations/legacy-tokens](https://api.slack.com/custom-integrations/legacy-tokens)
 4. Start up [http-to-https-proxy](https://github.com/yeokm1/http-to-https-proxy)
 4. Modify the file `w31slack.ini` configuration file to suit your needs. Fields in this order, token, server polling rate in milliseconds, IP address of proxy, port of proxy.
-5. Start up the `w31slack.exe`
+5. Start up the `w31slack.exe`. The binary an example config file is in the `release` folder.
 6. Profit!
 
 # References
