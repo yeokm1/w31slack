@@ -1,0 +1,28 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+Date: Wed, 11 Dec 2019 14:42:30 GMT
+Server: Apache
+X-Content-Type-Options: nosniff
+X-Slack-Req-Id: 2018f3bb62ead935a0a902beca952787
+X-OAuth-Scopes: read,client,admin,identify,post,apps
+Expires: Mon, 26 Jul 1997 05:00:00 GMT
+Cache-Control: private, no-cache, no-store, must-revalidate
+Access-Control-Expose-Headers: x-slack-req-id, retry-after
+X-XSS-Protection: 0
+X-Accepted-OAuth-Scopes: chat:write:user,client
+Vary: Accept-Encoding
+Pragma: no-cache
+Access-Control-Allow-Headers: slack-route, x-slack-version-ts
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+Referrer-Policy: no-referrer
+Access-Control-Allow-Origin: *
+X-Via: haproxy-www-818r
+X-Cache: Miss from cloudfront
+Via: 1.1 12b038d4c98d16c65897122b6ac31b54.cloudfront.net (CloudFront)
+X-Amz-Cf-Pop: SIN2-C1
+X-Amz-Cf-Id: uLzB3MFESmZUvG0iAR7SAo2e2KZNdNP_DF2X4Jg6YIuqdPtCmUdHmg==
+
+237
+{"ok":true,"channel":"CPV9L2VT3","ts":"1576075350.002900","message":{"bot_id":"BPVA8FQUR","type":"message","text":"hello","user":"UQ2NT009J","ts":"1576075350.002900","team":"TQ5D6U4KY","bot_profile":{"id":"BPVA8FQUR","deleted":false,"name":"Slack API Tester","updated":1572715792,"app_id":"A02","icons":{"image_36":"https:\/\/a.slack-edge.com\/80588\/img\/plugins\/app\/bot_36.png","image_48":"https:\/\/a.slack-edge.com\/80588\/img\/plugins\/app\/bot_48.png","image_72":"https:\/\/a.slack-edge.com\/80588\/img\/plugins\/app\/service_72.png"},"team_id":"TQ5D6U4KY"}}}

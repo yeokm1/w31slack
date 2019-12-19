@@ -1,0 +1,21 @@
+# Ignore compiler output
+*.bsc
+*.crf
+*.bnd
+*.exe
+*.lk1
+*.map
+*.obj
+*.pdb
+*.res
+*.sbr
+*.sym
+
+# Ignore Visual Studio files
+*.aps
+*.vcw
+*.wsp
+
+# Ignore Watcom files
+*.mk
+*.mk1

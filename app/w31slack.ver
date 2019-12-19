@@ -1,0 +1,35 @@
+#include <ver.h>
+
+/* Executable version information */
+VS_VERSION_INFO    VERSIONINFO DISCARDABLE
+FILEVERSION        1,0,0,0
+PRODUCTVERSION     1,0,0,0
+FILEFLAGSMASK      VS_FFI_FILEFLAGSMASK
+#ifdef _DEBUG
+  FILEFLAGS        VS_FF_DEBUG | VS_FF_PRERELEASE
+#else
+  FILEFLAGS        0
+#endif
+FILEOS             VOS_DOS_WINDOWS16
+FILETYPE           VFT_APP
+FILESUBTYPE        VFT2_UNKNOWN
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "080904E4"
+    BEGIN
+      VALUE "CompanyName", "Yeo Kheng Meng\0"
+      VALUE "FileDescription", "Slack for Windows 3.1\0"
+      VALUE "FileVersion", "1.0.0.0\0"
+      VALUE "InternalName", "W31Slack\0"
+      VALUE "LegalCopyright", "�2020 Yeo Kheng Meng\0"
+      VALUE "OriginalFilename", "w31slack.exe\0"
+      VALUE "ProductName", "Slack for Windows 3.1\0"
+      VALUE "ProductVersion", "1.0.0.0\0"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x809, 1252
+  END
+END
