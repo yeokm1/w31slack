@@ -17,7 +17,7 @@ To compile and run the application, you'll need Visual C++ (VC++) 1.52 running o
 
 Coding the app can thus be done on a native Mac or Windows OS with modern text editors.
 
-Even though a 16-bit app can run on modern 32-bit OS, I still recommend occasional testing on a native Windows 3.1 system as VMs are *too perfect* sometimes.
+Even though a 16-bit app can run on modern 32-bit OS, I still recommend occasional testing on a native Windows 3.1 system as VMs can be *too perfect* sometimes.
 
 1. Install Windows 2000 VM on a host PC. If you want to share files out of the Win 2K VM, set the network to `Bridged`.
 2. Install VC++ 1.52
@@ -35,10 +35,10 @@ The `w16slack.exe` binary should be available in the same directory.
 I wrote a custom unit test framework as I could not find a testing framework for C89 that'll work with VC++ 1.52. 2 Go Programs acting as mock servers are required to be run to test the network APIs.
 
 1. `go run mockprox.go` will reply the GET and POST requests by replaying the contents of the `ou*.txt` files.
-2. `go run replay.go 30000` will replay whatever was received on a pure TCP socket connection. This is 
+2. `go run replay.go 30000` will replay whatever was received on a pure TCP socket connection. 
 3. Edit the file `tstconst.h` to suit your system especially the `TEST_MOCK_SERVER_IP`
 4. Open the file `test.mak`
-5. Build Project as per normal and you'll see the following
+5. Build Project as per normal and run the binary in debug mode. You'll see the following
 
 ![Screen](images/wfwslack-test.png)
 
