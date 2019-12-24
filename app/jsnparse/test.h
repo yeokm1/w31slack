@@ -16,9 +16,10 @@
 #define TEST_CHANNEL3_ID "CQ52U515M"
 #define TEST_CHANNEL3_NAME "general"
 
+LPSTR lpGlobalMemory;
+DWORD allocatedMemorySize;
+
 BOOL test_jsnparse_parseMessageList1(){
-    LPSTR lpGlobalMemory;
-    DWORD allocatedMemorySize;
     DWORD dindex = 0;
     int index = 0;
     FILE *outputListText;
@@ -57,10 +58,6 @@ BOOL test_jsnparse_parseMessageList1(){
         strcpy(expectedList.messages[index].userID, "UQ2NT009J");
     }
 
-
-    lpGlobalMemory = GlobalAllocPtr(GMEM_MOVEABLE, TEST_MAX_GLOBAL_MEMORY_ALLOCATION);
-    allocatedMemorySize = GlobalSize(GlobalPtrHandle(lpGlobalMemory));
-
     outputListText = fopen(".\\mocksvr\\ouconhis.txt", "rb");
 
     while((read = fgetc(outputListText)) != EOF){
@@ -94,17 +91,14 @@ BOOL test_jsnparse_parseMessageList1(){
         printf("Not enough messages expected %d, got %d\n", expectedList.numMessages, actualList.numMessages);
     }
 
+    jsnparse_freeMessagesList(&actualList);
     jsnparse_freeMessagesList(&expectedList);
-
-    GlobalFreePtr(lpGlobalMemory);
 
     return testResult;
 
 }
 
 BOOL test_jsnparse_parseMessageList2(){
-    LPSTR lpGlobalMemory;
-    DWORD allocatedMemorySize;
     DWORD dindex = 0;
     int index = 0;
     FILE *outputListText;
@@ -143,10 +137,6 @@ BOOL test_jsnparse_parseMessageList2(){
         strcpy(expectedList.messages[index].userID, "UQ2NT009J");
     }
 
-
-    lpGlobalMemory = GlobalAllocPtr(GMEM_MOVEABLE, TEST_MAX_GLOBAL_MEMORY_ALLOCATION);
-    allocatedMemorySize = GlobalSize(GlobalPtrHandle(lpGlobalMemory));
-
     outputListText = fopen(".\\mocksvr\\ouconhi2.txt", "rb");
 
     while((read = fgetc(outputListText)) != EOF){
@@ -180,9 +170,8 @@ BOOL test_jsnparse_parseMessageList2(){
         printf("Not enough messages expected %d, got %d\n", expectedList.numMessages, actualList.numMessages);
     }
 
+    jsnparse_freeMessagesList(&actualList);
     jsnparse_freeMessagesList(&expectedList);
-
-    GlobalFreePtr(lpGlobalMemory);
 
     return testResult;
 
@@ -191,8 +180,6 @@ BOOL test_jsnparse_parseMessageList2(){
 
 BOOL test_jsnparse_parseChannelList(){
 
-    LPSTR lpGlobalMemory;
-    DWORD allocatedMemorySize;
     DWORD dindex = 0;
     int index = 0;
     FILE *outputListText;
@@ -222,9 +209,6 @@ BOOL test_jsnparse_parseChannelList(){
     expectedList.channels[3].channelName = (char *)malloc((strlen(TEST_CHANNEL3_NAME) + 1) * sizeof(char));
     strcpy(expectedList.channels[3].channelID, TEST_CHANNEL3_ID);
     strcpy(expectedList.channels[3].channelName, TEST_CHANNEL3_NAME);
-
-    lpGlobalMemory = GlobalAllocPtr(GMEM_MOVEABLE, TEST_MAX_GLOBAL_MEMORY_ALLOCATION);
-    allocatedMemorySize = GlobalSize(GlobalPtrHandle(lpGlobalMemory));
 
     outputListText = fopen(".\\mocksvr\\ouconlis.txt", "rb");
 
@@ -260,10 +244,8 @@ BOOL test_jsnparse_parseChannelList(){
     }
 
 
-
+    jsnparse_freeChannelList(&actualList);
     jsnparse_freeChannelList(&expectedList);
-
-    GlobalFreePtr(lpGlobalMemory);
 
     return testResult;
 }
@@ -272,6 +254,10 @@ BOOL test_jsnparse(){
 
     BOOL result = TRUE;
     BOOL intermediateResult;
+    int i = 0;
+
+    lpGlobalMemory = GlobalAllocPtr(GMEM_MOVEABLE, TEST_MAX_GLOBAL_MEMORY_ALLOCATION);
+    allocatedMemorySize = GlobalSize(GlobalPtrHandle(lpGlobalMemory));
 
     intermediateResult = test_jsnparse_parseChannelList();
 
