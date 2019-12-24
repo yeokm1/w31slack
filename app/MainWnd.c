@@ -173,11 +173,12 @@ void updateChannelMessages(){
      
       // Extra characters for the : and null terminator
       messageText = (char*) malloc(strlen(messagesList.messages[i].userID) + 3 + strlen(messagesList.messages[i].message) + 1);
-      sprintf(messageText, "%s : %s", messagesList.messages[i].userID, messagesList.messages[i].message);
-
-      SendMessage(GetDlgItem(hwnd, LIST_BOX_ID), LB_ADDSTRING, 0, (LPARAM) ((LPSTR) messageText));
-
-      free(messageText);
+      
+      if(messageText != NULL){
+        sprintf(messageText, "%s : %s", messagesList.messages[i].userID, messagesList.messages[i].message);
+        SendMessage(GetDlgItem(hwnd, LIST_BOX_ID), LB_ADDSTRING, 0, (LPARAM) ((LPSTR) messageText));
+        free(messageText);
+      }
     }
       
   } else {
@@ -247,7 +248,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
       if(((HWND) lParam) == channelsBox && (HIWORD(lParam) == LBN_SELCHANGE)){
         currentSelectedChannel = (WORD) SendMessage(channelsBox, LB_GETCURSEL, 0, 0L);
 
-        showToStatus("Selected channel: ", channelsList.channels[currentSelectedChannel].channelName);
+        showToStatus("Selected channel:", channelsList.channels[currentSelectedChannel].channelName);
         return 0;
       }
 
