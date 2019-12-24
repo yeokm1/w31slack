@@ -16,7 +16,7 @@
 #define TEST_CHANNEL3_ID "CQ52U515M"
 #define TEST_CHANNEL3_NAME "general"
 
-BOOL test_jsnparse_parseMessageList(){
+BOOL test_jsnparse_parseMessageList1(){
     LPSTR lpGlobalMemory;
     DWORD allocatedMemorySize;
     DWORD dindex = 0;
@@ -94,7 +94,91 @@ BOOL test_jsnparse_parseMessageList(){
         printf("Not enough messages expected %d, got %d\n", expectedList.numMessages, actualList.numMessages);
     }
 
+    jsnparse_freeMessagesList(&expectedList);
 
+    GlobalFreePtr(lpGlobalMemory);
+
+    return testResult;
+
+}
+
+BOOL test_jsnparse_parseMessageList2(){
+    LPSTR lpGlobalMemory;
+    DWORD allocatedMemorySize;
+    DWORD dindex = 0;
+    int index = 0;
+    FILE *outputListText;
+    char read;
+    MessageList expectedList = {NULL, 7};
+    MessageList actualList = {NULL, 0};
+    BOOL testResult = TRUE;
+
+    //There are 50 messages in the text file but due to json parsing limitations, we can only see the latest 7.
+    expectedList.messages = (Message *) malloc(7 * sizeof(Message));
+
+    expectedList.messages[0].message = (char *)malloc((strlen("hi from win 3.1") + 1) * sizeof(char));
+    strcpy(expectedList.messages[0].message, "hi from win 3.1");
+
+    expectedList.messages[1].message = (char *)malloc((strlen("hi win 3.1 from mac") + 1) * sizeof(char));
+    strcpy(expectedList.messages[1].message, "hi win 3.1 from mac");
+
+    expectedList.messages[2].message = (char *)malloc((strlen("hi mac from win 3.1") + 1) * sizeof(char));
+    strcpy(expectedList.messages[2].message, "hi mac from win 3.1");
+
+    expectedList.messages[3].message = (char *)malloc((strlen("hi world! This is win 3.1") + 1) * sizeof(char));
+    strcpy(expectedList.messages[3].message, "hi world! This is win 3.1");   
+
+    expectedList.messages[4].message = (char *)malloc((strlen("eu") + 1) * sizeof(char));
+    strcpy(expectedList.messages[4].message, "eu");
+
+    expectedList.messages[5].message = (char *)malloc((strlen("Hieveryone") + 1) * sizeof(char));
+    strcpy(expectedList.messages[5].message, "Hieveryone");
+
+    expectedList.messages[6].message = (char *)malloc((strlen("Hi to <#CPV9L2UJV|random>  channel!") + 1) * sizeof(char));
+    strcpy(expectedList.messages[6].message, "Hi to <#CPV9L2UJV|random>  channel!");
+
+
+    for(index = 0; index < 7; index++){
+        expectedList.messages[index].userID = (char *)malloc((strlen("UQ2NT009J") + 1) * sizeof(char));
+        strcpy(expectedList.messages[index].userID, "UQ2NT009J");
+    }
+
+
+    lpGlobalMemory = GlobalAllocPtr(GMEM_MOVEABLE, TEST_MAX_GLOBAL_MEMORY_ALLOCATION);
+    allocatedMemorySize = GlobalSize(GlobalPtrHandle(lpGlobalMemory));
+
+    outputListText = fopen(".\\mocksvr\\ouconhi2.txt", "rb");
+
+    while((read = fgetc(outputListText)) != EOF){
+        lpGlobalMemory[dindex] = read;
+        dindex++;
+    }
+
+    fclose(outputListText);
+
+    jsnparse_parseMessageList(lpGlobalMemory, dindex, &actualList);
+
+    if(expectedList.numMessages == actualList.numMessages){
+
+        for(index = 0; index < expectedList.numMessages; index++){
+            if (strcmp (expectedList.messages[index].userID, actualList.messages[index].userID) != 0){
+                printf("fail %s\n", expectedList.messages[index].userID);
+                testResult = FALSE;
+                break;
+            }
+
+            if (strcmp (expectedList.messages[index].message, actualList.messages[index].message) != 0){
+                printf("fail %s\n", expectedList.messages[index].message);
+                testResult = FALSE;
+                break;
+            }
+
+        }
+
+    } else {
+        testResult = FALSE;
+        printf("Not enough messages expected %d, got %d\n", expectedList.numMessages, actualList.numMessages);
+    }
 
     jsnparse_freeMessagesList(&expectedList);
 
@@ -198,13 +282,22 @@ BOOL test_jsnparse(){
         OutputDebugString("test_jsnparse_parseChannelList() failed\n");
     }
 
-    intermediateResult = test_jsnparse_parseMessageList();
+    intermediateResult = test_jsnparse_parseMessageList1();
 
     if(intermediateResult){
-        OutputDebugString("test_jsnparse_parseMessageList() passed\n");
+        OutputDebugString("test_jsnparse_parseMessageList1() passed\n");
     } else{
         result = FALSE;
-        OutputDebugString("test_jsnparse_parseMessageList() failed\n");
+        OutputDebugString("test_jsnparse_parseMessageList1() failed\n");
+    }
+
+    intermediateResult = test_jsnparse_parseMessageList2();
+
+    if(intermediateResult){
+        OutputDebugString("test_jsnparse_parseMessageList2() passed\n");
+    } else{
+        result = FALSE;
+        OutputDebugString("test_jsnparse_parseMessageList2() failed\n");
     }
 
     return result;
