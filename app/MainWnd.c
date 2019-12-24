@@ -238,7 +238,11 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
       FillRect(hdc, &statusRect, hbrush);
       DrawText(hdc, statusText, strlen(statusText), &statusRect, DT_LEFT | DT_NOCLIP);
 
+
+      DeleteObject(hbrush);
       EndPaint(hwnd, &ps);
+
+
 
       return 0;
 
