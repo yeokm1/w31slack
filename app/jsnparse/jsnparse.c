@@ -54,6 +54,7 @@ void jsnparse_parseMessageList(LPSTR response, DWORD length, MessageList * list)
 
     jsmn_init(&parser);
     jsmn_parse(&parser, startOfJson, lengthOfJson, tokens, MAX_TOKENS);
+    list->numMessages = 0;
 
     //First pass to determine number of channels there are
     for(index = 0; index < MAX_TOKENS; index++){
@@ -98,6 +99,8 @@ void jsnparse_freeMessagesList(MessageList * list){
     }
 
     free(list->messages);
+    list->messages = NULL;
+    list->numMessages = 0;
 }
 
 
@@ -115,6 +118,7 @@ void jsnparse_parseChannelList(LPSTR response, DWORD length, ChannelList * list)
 
     jsmn_init(&parser);
     jsmn_parse(&parser, startOfJson, lengthOfJson, tokens, MAX_TOKENS);
+    list->numChannels = 0;
 
     //First pass to determine number of channels there are
     for(index = 0; index < MAX_TOKENS; index++){
@@ -158,4 +162,6 @@ void jsnparse_freeChannelList(ChannelList * list){
     }
 
     free(list->channels);
+    list->channels = NULL;
+    list->numChannels = 0;
 }
