@@ -53,6 +53,11 @@ MessageList messagesList = {NULL, 0};
 
 int currentSelectedChannel = 0;
 
+LPSTR lpGlobalMemory;
+DWORD allocatedMemorySize;
+
+HBRUSH hbrush;
+
 BOOL openAndProcessConfigFile(char * filename){
   FILE * configFile;
   char buff[6];
@@ -102,21 +107,15 @@ void showToStatus(char * action, char * data){
 
 
 void sendSlackMessage(HWND hwnd){
-  LPSTR lpGlobalMemory;
-  DWORD allocatedMemorySize;
   DWORD bytesReceived;
   char messageFromBox[MAX_MESSAGE_FROM_BOX];
   char messageEscaped[MAX_MESSAGE_TO_SEND];
-
 
   GetWindowText(textField, messageFromBox, MAX_MESSAGE_FROM_BOX);
 
   escapes_encode(messageFromBox, messageEscaped);
 
   showToStatus("Posting:", messageEscaped);
-
-  lpGlobalMemory = GlobalAllocPtr(GMEM_MOVEABLE, MAX_GLOBAL_MEM_ALLOCATION);
-  allocatedMemorySize = GlobalSize(GlobalPtrHandle(lpGlobalMemory));
 
   bytesReceived = restapi_sendMessageToChannel(ip, port, channelsList.channels[currentSelectedChannel].channelName, messageEscaped, token, lpGlobalMemory, allocatedMemorySize);
 
@@ -127,21 +126,14 @@ void sendSlackMessage(HWND hwnd){
     showToStatus("Cannot send:", messageEscaped);
   }
 
-  GlobalFreePtr(lpGlobalMemory);
-
 }
 
 void updateChannelsList(){
 
-  LPSTR lpGlobalMemory;
-  DWORD allocatedMemorySize;
   DWORD bytesReceived;
   int i;
 
   showToStatus("Updating channels list", "");
-
-  lpGlobalMemory = GlobalAllocPtr(GMEM_MOVEABLE, MAX_GLOBAL_MEM_ALLOCATION);
-  allocatedMemorySize = GlobalSize(GlobalPtrHandle(lpGlobalMemory));
 
   bytesReceived = restapi_getChannelList(ip, port, token, lpGlobalMemory, allocatedMemorySize);
 
@@ -159,21 +151,14 @@ void updateChannelsList(){
   } else {
     showToStatus("Cannot retrieve channels list", "");
   }
-
-  GlobalFreePtr(lpGlobalMemory);
 }
 
 void updateChannelMessages(){
-  LPSTR lpGlobalMemory;
-  DWORD allocatedMemorySize;
   DWORD bytesReceived;
   int i;
   char * messageText;
 
   showToStatus("Updating messages from:", channelsList.channels[currentSelectedChannel].channelName);
-
-  lpGlobalMemory = GlobalAllocPtr(GMEM_MOVEABLE, MAX_GLOBAL_MEM_ALLOCATION);
-  allocatedMemorySize = GlobalSize(GlobalPtrHandle(lpGlobalMemory));
 
   bytesReceived = restapi_getChannelMessages(ip, port, channelsList.channels[currentSelectedChannel].channelID, token, lpGlobalMemory, allocatedMemorySize);
 
@@ -198,9 +183,6 @@ void updateChannelMessages(){
   } else {
     showToStatus("Cannot retrieve messages list", "");
   }
-
-  GlobalFreePtr(lpGlobalMemory);
-
 }
 
 void sendSingleShotUpdateTimer(HWND hwnd){
@@ -213,7 +195,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
   HDC hdc;
   PAINTSTRUCT ps;
-  HBRUSH hbrush;
 
   char settingsText[80];
 
@@ -221,28 +202,26 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
   {
     case WM_CREATE:
       showToStatus("Slack for Win 3.1 starting...", "");
+      lpGlobalMemory = GlobalAllocPtr(GMEM_MOVEABLE, MAX_GLOBAL_MEM_ALLOCATION);
+      allocatedMemorySize = GlobalSize(GlobalPtrHandle(lpGlobalMemory));
+
+      hbrush = CreateSolidBrush(RGB(255, 255, 255));
+
       return 0;
     case WM_PAINT:
       hdc = BeginPaint(hwnd, &ps);
       sprintf(settingsText, "Proxy %s:%d, Refresh every %dms", ip, port, refreshRate);
-
-      hbrush = CreateSolidBrush(RGB(255, 255, 255));
 
 
       SetRect(&statusRect, 20, 357, 430, 374);
       FillRect(hdc, &statusRect, hbrush);
       DrawText(hdc, settingsText, strlen(settingsText), &statusRect, DT_LEFT | DT_NOCLIP);
 
-     
       SetRect(&statusRect, 20, 380, 430, 397);
       FillRect(hdc, &statusRect, hbrush);
       DrawText(hdc, statusText, strlen(statusText), &statusRect, DT_LEFT | DT_NOCLIP);
 
-
-      DeleteObject(hbrush);
       EndPaint(hwnd, &ps);
-
-
 
       return 0;
 
@@ -323,6 +302,9 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     }
     case WM_DESTROY:
     {
+      
+      DeleteObject(hbrush);
+      GlobalFreePtr(lpGlobalMemory);
       PostQuitMessage(0);
       return 0;
     }
