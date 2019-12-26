@@ -1,7 +1,7 @@
 # Microsoft Visual C++ generated build script - Do not modify
 
 PROJ = W31SLACK
-DEBUG = 0
+DEBUG = 1
 PROGTYPE = 0
 CALLER = 
 ARGS = test
