@@ -46,10 +46,12 @@ char ip[IP_MAX];
 int port;
 char statusText[MAX_MESSAGE_TO_SEND + 20];
 
+BOOL usersObtained = FALSE;
 BOOL channelsObtained = FALSE;
 
 ChannelList channelsList = {NULL, 0};
 MessageList messagesList = {NULL, 0};
+UserList usersList = {NULL, 0};
 
 int currentSelectedChannel = 0;
 
@@ -153,6 +155,24 @@ void updateChannelsList(){
   }
 }
 
+void updateUsersList(){
+
+  DWORD bytesReceived;
+
+  showToStatus("Updating users list", "");
+
+  bytesReceived = restapi_getUsersList(ip, port, token, lpGlobalMemory, allocatedMemorySize);
+
+  if(bytesReceived > 0){
+    jsnparse_freeUserList(&usersList);
+    jsnparse_parseUserList(lpGlobalMemory, bytesReceived, &usersList);
+
+    usersObtained = TRUE;
+  } else {
+    showToStatus("Cannot retrieve users list", "");
+  }
+}
+
 void updateChannelMessages(){
   DWORD bytesReceived;
   int i;
@@ -170,12 +190,23 @@ void updateChannelMessages(){
 
     //Invert order of populating where newer messages appear below
     for (i = messagesList.numMessages - 1; i >= 0 ; --i){
+
+      int userIndex;
+      char * userToShow = messagesList.messages[i].userID;
+
+      //If we can locate the userID, we display the username
+      for(userIndex = 0; userIndex < usersList.numUsers; userIndex++){
+        if (strcmp (userToShow, usersList.users[userIndex].userID) == 0){
+          userToShow = usersList.users[userIndex].username;
+          break;
+        }
+      }
      
       // Extra characters for the : and null terminator
-      messageText = (char*) malloc(strlen(messagesList.messages[i].userID) + 3 + strlen(messagesList.messages[i].message) + 1);
+      messageText = (char*) malloc(strlen(userToShow) + 3 + strlen(messagesList.messages[i].message) + 1);
       
       if(messageText != NULL){
-        sprintf(messageText, "%s : %s", messagesList.messages[i].userID, messagesList.messages[i].message);
+        sprintf(messageText, "%s : %s", userToShow, messagesList.messages[i].message);
         SendMessage(GetDlgItem(hwnd, LIST_BOX_ID), LB_ADDSTRING, 0, (LPARAM) ((LPSTR) messageText));
         free(messageText);
       }
@@ -232,14 +263,18 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
           KillTimer(hwnd, SINGLE_SHOT_TIMER_ID);
         case REFRESH_TIMER_ID:
 
+        if(usersObtained){
           if(channelsObtained){
             updateChannelMessages();
           } else {
             updateChannelsList();
           }
 
+        } else {
+          updateUsersList();
+        }
 
-          return 0;
+        return 0;
       }
 
     case WM_COMMAND:
