@@ -12,4 +12,6 @@ curl -H "Host: slack.com" -H "Authorization: Bearer xoxp-821448956678-8187750003
 curl -H "Host: slack.com" -H "Authorization: Bearer xoxp-821448956678-818775000324-818797461140-4d175b4e14b948d630f195e51478bb0e" -X GET "http://127.0.0.1:80/api/conversations.list"
 
 curl -H "Host: slack.com" -H "Authorization: Bearer xoxp-821448956678-818775000324-818797461140-4d175b4e14b948d630f195e51478bb0e" -X GET "http://127.0.0.1:80/api/conversations.history?channel=CPV9L2VT3"
+
+curl -H "Host: slack.com" -H "Authorization: Bearer xoxp-821448956678-818775000324-818797461140-4d175b4e14b948d630f195e51478bb0e" -X GET "http://127.0.0.1:80/api/users.list"
 ```

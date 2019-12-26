@@ -3,19 +3,6 @@
 #include "..\tstconst.h"
 #include <stdlib.h>
 
-
-#define TEST_CHANNEL0_ID "CPV9L2UJV"
-#define TEST_CHANNEL0_NAME "random"
-
-#define TEST_CHANNEL1_ID "CPV9L2VT3"
-#define TEST_CHANNEL1_NAME "win31"
-
-#define TEST_CHANNEL2_ID "CQ2NUCLDA"
-#define TEST_CHANNEL2_NAME "playground"
-
-#define TEST_CHANNEL3_ID "CQ52U515M"
-#define TEST_CHANNEL3_NAME "general"
-
 LPSTR lpGlobalMemory;
 DWORD allocatedMemorySize;
 
@@ -177,7 +164,6 @@ BOOL test_jsnparse_parseMessageList2(){
 
 }
 
-
 BOOL test_jsnparse_parseChannelList(){
 
     DWORD dindex = 0;
@@ -190,25 +176,25 @@ BOOL test_jsnparse_parseChannelList(){
 
     expectedList.channels = (Channel *) malloc(4 * sizeof(Channel));
 
-    expectedList.channels[0].channelID = (char *)malloc((strlen(TEST_CHANNEL0_ID) + 1) * sizeof(char));
-    expectedList.channels[0].channelName = (char *)malloc((strlen(TEST_CHANNEL0_NAME) + 1) * sizeof(char));
-    strcpy(expectedList.channels[0].channelID, TEST_CHANNEL0_ID);
-    strcpy(expectedList.channels[0].channelName, TEST_CHANNEL0_NAME);
+    expectedList.channels[0].channelID = (char *)malloc((strlen("CPV9L2UJV") + 1) * sizeof(char));
+    expectedList.channels[0].channelName = (char *)malloc((strlen("random") + 1) * sizeof(char));
+    strcpy(expectedList.channels[0].channelID, "CPV9L2UJV");
+    strcpy(expectedList.channels[0].channelName, "random");
 
-    expectedList.channels[1].channelID = (char *)malloc((strlen(TEST_CHANNEL1_ID) + 1) * sizeof(char));
-    expectedList.channels[1].channelName = (char *)malloc((strlen(TEST_CHANNEL1_NAME) + 1) * sizeof(char));
-    strcpy(expectedList.channels[1].channelID, TEST_CHANNEL1_ID);
-    strcpy(expectedList.channels[1].channelName, TEST_CHANNEL1_NAME);
+    expectedList.channels[1].channelID = (char *)malloc((strlen("CPV9L2VT3") + 1) * sizeof(char));
+    expectedList.channels[1].channelName = (char *)malloc((strlen("win31") + 1) * sizeof(char));
+    strcpy(expectedList.channels[1].channelID, "CPV9L2VT3");
+    strcpy(expectedList.channels[1].channelName,"win31");
 
-    expectedList.channels[2].channelID = (char *)malloc((strlen(TEST_CHANNEL2_ID) + 1) * sizeof(char));
-    expectedList.channels[2].channelName = (char *)malloc((strlen(TEST_CHANNEL2_NAME) + 1) * sizeof(char));
-    strcpy(expectedList.channels[2].channelID, TEST_CHANNEL2_ID);
-    strcpy(expectedList.channels[2].channelName, TEST_CHANNEL2_NAME);
+    expectedList.channels[2].channelID = (char *)malloc((strlen("CQ2NUCLDA") + 1) * sizeof(char));
+    expectedList.channels[2].channelName = (char *)malloc((strlen("playground") + 1) * sizeof(char));
+    strcpy(expectedList.channels[2].channelID, "CQ2NUCLDA");
+    strcpy(expectedList.channels[2].channelName, "playground");
 
-    expectedList.channels[3].channelID = (char *)malloc((strlen(TEST_CHANNEL3_ID) + 1) * sizeof(char));
-    expectedList.channels[3].channelName = (char *)malloc((strlen(TEST_CHANNEL3_NAME) + 1) * sizeof(char));
-    strcpy(expectedList.channels[3].channelID, TEST_CHANNEL3_ID);
-    strcpy(expectedList.channels[3].channelName, TEST_CHANNEL3_NAME);
+    expectedList.channels[3].channelID = (char *)malloc((strlen("CQ52U515M") + 1) * sizeof(char));
+    expectedList.channels[3].channelName = (char *)malloc((strlen("general") + 1) * sizeof(char));
+    strcpy(expectedList.channels[3].channelID, "CQ52U515M");
+    strcpy(expectedList.channels[3].channelName, "general");
 
     outputListText = fopen(".\\mocksvr\\ouconlis.txt", "rb");
 
@@ -250,6 +236,68 @@ BOOL test_jsnparse_parseChannelList(){
     return testResult;
 }
 
+BOOL test_jsnparse_parseUserList(){
+
+    DWORD dindex = 0;
+    int index = 0;
+    FILE *outputListText;
+    char read;
+    UserList expectedList = {NULL, 2};
+    UserList actualList = {NULL, 0};
+    BOOL testResult = TRUE;
+
+    expectedList.users = (User *) malloc(2 * sizeof(User));
+
+    expectedList.users[0].userID = (char *)malloc((strlen("USLACKBOT") + 1) * sizeof(char));
+    expectedList.users[0].username = (char *)malloc((strlen("slackbot") + 1) * sizeof(char));
+    strcpy(expectedList.users[0].userID, "USLACKBOT");
+    strcpy(expectedList.users[0].username, "slackbot");
+
+    expectedList.users[1].userID = (char *)malloc((strlen("UQ2NT009J") + 1) * sizeof(char));
+    expectedList.users[1].username = (char *)malloc((strlen("yeokm1") + 1) * sizeof(char));
+    strcpy(expectedList.users[1].userID, "UQ2NT009J");
+    strcpy(expectedList.users[1].username, "yeokm1");
+
+    outputListText = fopen(".\\mocksvr\\ouusrlis.txt", "rb");
+
+    while((read = fgetc(outputListText)) != EOF){
+        lpGlobalMemory[dindex] = read;
+        dindex++;
+    }
+
+    fclose(outputListText);
+
+    jsnparse_parseUserList(lpGlobalMemory, dindex, &actualList);
+
+    if(expectedList.numUsers == actualList.numUsers){
+
+        for(index = 0; index < expectedList.numUsers; index++){
+            if (strcmp (expectedList.users[index].userID, actualList.users[index].userID) != 0){
+                printf("fail %s\n", expectedList.users[index].userID);
+                testResult = FALSE;
+                break;
+            }
+
+            if (strcmp (expectedList.users[index].username, actualList.users[index].username) != 0){
+                printf("fail %s\n", expectedList.users[index].username);
+                testResult = FALSE;
+                break;
+            }
+
+        }
+
+    } else {
+        testResult = FALSE;
+        printf("Not enough users expected %d, got %d\n", expectedList.numUsers, actualList.numUsers);
+    }
+
+
+    jsnparse_freeUserList(&actualList);
+    jsnparse_freeUserList(&expectedList);
+
+    return testResult;
+}
+
 BOOL test_jsnparse(){
 
     BOOL result = TRUE;
@@ -284,6 +332,15 @@ BOOL test_jsnparse(){
     } else{
         result = FALSE;
         OutputDebugString("test_jsnparse_parseMessageList2() failed\n");
+    }
+
+    intermediateResult = test_jsnparse_parseUserList();
+
+    if(intermediateResult){
+        OutputDebugString("test_jsnparse_parseUserList() passed\n");
+    } else{
+        result = FALSE;
+        OutputDebugString("test_jsnparse_parseUserList() failed\n");
     }
 
     return result;

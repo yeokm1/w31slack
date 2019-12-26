@@ -63,7 +63,7 @@ void jsnparse_parseMessageList(LPSTR response, DWORD length, MessageList * list)
 
         if(strcmp("text", currentTokenString) == 0){
 
-            //Verify that the channel ID and name does not exceed the tokens we have
+            //Verify that the message ID and name does not exceed the tokens we have
             if(((index + 1) < MAX_TOKENS) && ((index + 3) < MAX_TOKENS)){
 
                 //Make sure [index + 2] token is "user" as "text" and "user" must come in a pair
@@ -130,7 +130,7 @@ void jsnparse_parseChannelList(LPSTR response, DWORD length, ChannelList * list)
             //Verify that the channel ID and name does not exceed the tokens we have
             if(((index + 1) < MAX_TOKENS) && ((index + 3) < MAX_TOKENS)){
 
-                //Make sure [index + 2] token is "user" as "text" and "user" must come in a pair
+                //Make sure [index + 2] token is "name" as "id" and "name" must come in a pair
                 currentTokenStringp2 = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index + 2]);
 
                 if(strcmp("name", currentTokenStringp2) == 0){
@@ -164,4 +164,66 @@ void jsnparse_freeChannelList(ChannelList * list){
     free(list->channels);
     list->channels = NULL;
     list->numChannels = 0;
+}
+
+void jsnparse_parseUserList(LPSTR response, DWORD length, UserList * list){
+    jsmn_parser parser;
+    jsmntok_t tokens[MAX_TOKENS];
+    int index;
+    LPSTR startOfJson;
+    DWORD lengthOfJson;
+
+    char * currentTokenString;
+    char * currentTokenStringp2;
+
+    jsnparse_getStartOfJson(response, length, &startOfJson, &lengthOfJson);
+
+    jsmn_init(&parser);
+    jsmn_parse(&parser, startOfJson, lengthOfJson, tokens, MAX_TOKENS);
+    list->numUsers = 0;
+
+    //First pass to determine number of channels there are
+    for(index = 0; index < MAX_TOKENS; index++){
+
+        currentTokenString = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index]);
+
+        if(strcmp("id", currentTokenString) == 0){
+
+            //Verify that the user ID and name does not exceed the tokens we have
+            if(((index + 1) < MAX_TOKENS) && ((index + 5) < MAX_TOKENS)){
+
+                //Make sure [index + 4] token is "name" as "id" and "namer" must come in a pair
+                currentTokenStringp2 = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index + 4]);
+
+                if(strcmp("name", currentTokenStringp2) == 0){
+
+                    list->users = (User * ) realloc(list->users, (list->numUsers + 1) * sizeof(User));
+
+                    list->users[list->numUsers].userID = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index + 1]);
+                    list->users[list->numUsers].username = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index + 5]);
+
+                    list->numUsers++;
+                }
+
+                free(currentTokenStringp2);
+                
+            }
+
+        }
+        free(currentTokenString);
+    }
+}
+
+
+void jsnparse_freeUserList(UserList * list){
+    int index;
+
+    for(index = 0; index < list->numUsers; index++){
+        free(list->users[index].username);
+        free(list->users[index].userID);
+    }
+
+    free(list->users);
+    list->users = NULL;
+    list->numUsers = 0;
 }

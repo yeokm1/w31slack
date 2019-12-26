@@ -35,7 +35,7 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     if(result){
         OutputDebugString("Test JSNParse passed\n");
     } else {
-        OutputDebugString("TestJSNParse failed\n");
+        OutputDebugString("Test JSNParse failed\n");
     }
 
 

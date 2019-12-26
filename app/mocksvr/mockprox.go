@@ -13,6 +13,7 @@ var httpListenPort = 80
 var conversationsHistory []byte
 var conversationsList []byte
 var postMessage []byte
+var usersList []byte
 
 func handler(responseToRequest http.ResponseWriter, incomingRequest *http.Request) {
 
@@ -30,6 +31,8 @@ func handler(responseToRequest http.ResponseWriter, incomingRequest *http.Reques
 			reply = conversationsList
 		case "/api/conversations.history":
 			reply = conversationsHistory
+		case "/api/users.list":
+			reply = usersList
 		}
 
 	case "POST":
@@ -83,6 +86,7 @@ func main() {
 	postMessage, _ = readFile("ouposmsg.txt")
 	conversationsList, _ = readFile("ouconlis.txt")
 	conversationsHistory, _ = readFile("ouconhis.txt")
+	usersList, _ = readFile("ouusrlis.txt")
 
 	log.Printf("Starting Mock Server listening to %d", httpListenPort)
 

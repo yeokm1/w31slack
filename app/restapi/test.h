@@ -121,6 +121,45 @@ static BOOL test_restapi_getChannelList(){
     return testResult;
 }
 
+static BOOL test_restapi_getUsersList(){
+
+    LPSTR lpGlobalMemory;
+    DWORD allocatedMemorySize;
+    char read[1];
+    FILE *outputGetMessage;
+    DWORD index = 0;
+    DWORD bytesReceived;
+
+    BOOL testResult = TRUE;
+
+    lpGlobalMemory = GlobalAllocPtr(GMEM_MOVEABLE, TEST_MAX_GLOBAL_MEMORY_ALLOCATION);
+    allocatedMemorySize = GlobalSize(GlobalPtrHandle(lpGlobalMemory));
+
+    bytesReceived = restapi_getUsersList(TEST_MOCK_SERVER_IP, TEST_MOCK_PROXY_SERVER_PORT, TEST_TOKEN, lpGlobalMemory, allocatedMemorySize);
+
+    outputGetMessage = fopen(".\\mocksvr\\ouusrlis.txt", "rb");
+
+    if(outputGetMessage == NULL){
+      printf("Cannot open result file\n");
+      testResult = FALSE;
+   } else {
+
+        while((read[0] = fgetc(outputGetMessage)) != EOF){
+            if(lpGlobalMemory[index] != read[0]){
+                testResult = FALSE;
+                break;
+            }
+            index++;
+        }
+
+        fclose(outputGetMessage);
+   }
+
+    GlobalFreePtr(lpGlobalMemory);
+
+    return testResult;
+}
+
 BOOL test_restapi(){
 
     BOOL result = TRUE;
@@ -153,6 +192,15 @@ BOOL test_restapi(){
     } else {
         result = FALSE;
         OutputDebugString(" test_restapi_getChannelList() failed\n");
+    }
+
+    intermediateResult = test_restapi_getUsersList();
+
+    if(intermediateResult){
+         OutputDebugString("test_restapi_getUsersList() passed\n"); 
+    } else {
+        result = FALSE;
+        OutputDebugString("test_restapi_getUsersList() failed\n");
     }
 
 

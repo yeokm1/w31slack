@@ -26,12 +26,25 @@ typedef struct
     int numMessages;
 } MessageList;
 
+typedef struct 
+{
+    char * username;
+    char * userID;
+} User;
+
+typedef struct 
+{
+    User * users;
+    int numUsers;
+} UserList;
+
 
 void jsnparse_parseChannelList(LPSTR response, DWORD length, ChannelList * list);
 void jsnparse_parseMessageList(LPSTR response, DWORD length, MessageList * list);
-
+void jsnparse_parseUserList(LPSTR response, DWORD length, UserList * list);
 
 void jsnparse_freeChannelList(ChannelList * list);
 void jsnparse_freeMessagesList(MessageList * list);
+void jsnparse_freeUserList(UserList * list);
 
 #endif
