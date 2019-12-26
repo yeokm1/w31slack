@@ -52,6 +52,16 @@ I wrote a custom unit test framework as I could not find a testing framework for
 5. Start up the `w31slack.exe`. The binary and example config file is in the `release` folder.
 6. Profit!
 
+# Known issues
+
+1. The number of JSON tokens parsed by JSMN is limited to 256 due to memory issues. This limits everything from the number of users, channels and messages that can be processed and displayed.
+
+2. It's unknown why the app runs on WFW 3.11, Win 2000 but fails to get users and crashes on Win 10 32-bit.
+
+3. App seems to work when compiled under Debug mode but crashes on Release mode.
+
+4. Resolving the user ids to nicknames was recently added but causes above 2 issue. Otherwise, still ok.
+
 # References
 1. [Building Win16 GUI Applications in C](http://www.transmissionzero.co.uk/computing/win16-apps-in-c/)
 2. [Win16 Example Application](https://github.com/TransmissionZero/Win16-Example-Application)
