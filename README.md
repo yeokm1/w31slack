@@ -60,7 +60,9 @@ I wrote a custom unit test framework as I could not find a testing framework for
 
 3. App seems to work when compiled under Debug mode but crashes on Release mode.
 
-4. Resolving the user ids to nicknames was recently added but causes above 2 issue. Otherwise, still ok.
+3. App may crash on General Protection Fault when first launched on a newly-booted system. Start the app the second time and it should be ok.
+
+4. Resolving the user ids to nicknames was recently added but causes above 3 issues. Otherwise, still ok.
 
 # References
 1. [Building Win16 GUI Applications in C](http://www.transmissionzero.co.uk/computing/win16-apps-in-c/)
