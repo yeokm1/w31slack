@@ -34,13 +34,13 @@ The `w16slack.exe` binary should be available in the same directory.
 
 I wrote a custom unit test framework as I could not find a testing framework for C89 that'll work with VC++ 1.52. 2 Go Programs acting as mock servers are required to be run to test the network APIs.
 
+![Screen](images/wfwslack-test-setup.png)
+
 1. `go run mockprox.go` will reply the GET and POST requests by replaying the contents of the `ou*.txt` files.
 2. `go run replay.go 30000` will replay whatever was received on a pure TCP socket connection. 
 3. Edit the file `tstconst.h` to suit your system especially the `TEST_MOCK_SERVER_IP`
 4. Open the file `test.mak`
 5. Build Project as per normal and run the binary in debug mode. You'll see the following
-
-![Screen](images/wfwslack-test.png)
 
 # Running the app
 
