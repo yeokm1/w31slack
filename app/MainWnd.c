@@ -14,6 +14,8 @@
 
 
 #define CONFIG_FILE_TO_OPEN "w31slack.ini"
+#define IDS_FILE "userchan.ids"
+
 #define TOKEN_LENGTH_MAX 90
 #define IP_MAX 20
 
@@ -71,13 +73,12 @@ BOOL openAndProcessConfigFile(char * filename){
     return FALSE;
   }
 
-
   fgets(token, TOKEN_LENGTH_MAX, configFile);
 
   //Remove trailing newline
   token[strcspn(token, "\r\n")] = '\0';
   
-  fgets(buff, 6, configFile);
+  fgets(buff, 10, configFile);
   refreshRate = atoi(buff);
 
   fgets(ip, IP_MAX, configFile);
@@ -90,17 +91,82 @@ BOOL openAndProcessConfigFile(char * filename){
   fgets(buff, 6, configFile);
   maxMessagesToParse = atoi(buff);
 
-  fgets(buff, 20, configFile);
-  //Remove trailing newline
-  buff[strcspn(buff, "\r\n")] = '\0';
+  fclose(configFile);
+  
+  return TRUE;
 
-  if(strcmp("resolveusers", buff) != 0){
-    usersObtained = TRUE;
+}
+
+void updateChannelsUI(){
+
+  int i;
+  SendMessage(GetDlgItem(hwnd, CHANNELS_BOX_ID), LB_RESETCONTENT, 0, 0);
+
+  for (i = 0; i < channelsList.numChannels; i++){
+    SendMessage(GetDlgItem(hwnd, CHANNELS_BOX_ID), LB_ADDSTRING, 0, (LPARAM) ((LPSTR) channelsList.channels[i].channelName));
+  }
+}
+
+BOOL openAndProcessIDsFile(char * filename){
+  FILE * idsFile;
+  char line[50];
+
+  idsFile = fopen(filename, "r");
+
+  if(idsFile == NULL){
+    return FALSE;
   }
 
-  fclose(configFile);
+  while(fgets(line, 50, idsFile) != NULL){
+
+    char * firstParam;
+    char * secondParam;
+
+    // Replace newline with null chacter
+    line[strcspn(line, "\r\n")] = '\0';
+
+    firstParam = strtok(line, " ");
 
 
+    if(firstParam[0] == 'C'){
+      channelsList.channels = (Channel * ) realloc(channelsList.channels, (channelsList.numChannels + 1) * sizeof(Channel));
+
+      channelsList.channels[channelsList.numChannels].channelID = malloc(strlen(firstParam) + 1);
+      strcpy(channelsList.channels[channelsList.numChannels].channelID, firstParam);
+
+      OutputDebugString(channelsList.channels[channelsList.numChannels].channelID);
+      OutputDebugString(" ");
+
+      secondParam = strtok(NULL, " ");
+
+      channelsList.channels[channelsList.numChannels].channelName = malloc(strlen(secondParam) + 1);
+      strcpy(channelsList.channels[channelsList.numChannels].channelName, secondParam);
+
+      channelsList.numChannels++;
+
+    } else if (firstParam[0] == 'U'){
+
+      usersList.users = (User * ) realloc(usersList.users, (usersList.numUsers + 1) * sizeof(User));
+
+      usersList.users[usersList.numUsers].userID = malloc(strlen(firstParam) + 1);
+      strcpy(usersList.users[usersList.numUsers].userID, firstParam);
+
+      secondParam = strtok(NULL, " ");
+
+      usersList.users[usersList.numUsers].username = malloc(strlen(secondParam) + 1);
+      strcpy(usersList.users[usersList.numUsers].username, secondParam);
+
+      usersList.numUsers++;
+    }
+
+
+  }
+
+  fclose(idsFile);
+
+  usersObtained = TRUE;
+  channelsObtained = TRUE;
+  
   return TRUE;
 
 }
@@ -146,7 +212,6 @@ void sendSlackMessage(HWND hwnd){
 void updateChannelsList(){
 
   DWORD bytesReceived;
-  int i;
 
   showToStatus("Updating channels list", "");
 
@@ -155,18 +220,17 @@ void updateChannelsList(){
   if(bytesReceived > 0){
     jsnparse_freeChannelList(&channelsList);
     jsnparse_parseChannelList(lpGlobalMemory, bytesReceived, &channelsList);
-
-    SendMessage(GetDlgItem(hwnd, CHANNELS_BOX_ID), LB_RESETCONTENT, 0, 0);
-
-    for (i = 0; i < channelsList.numChannels; i++){
-      SendMessage(GetDlgItem(hwnd, CHANNELS_BOX_ID), LB_ADDSTRING, 0, (LPARAM) ((LPSTR) channelsList.channels[i].channelName));
-    }
       
+    updateChannelsUI();
+    
     channelsObtained = TRUE;
+    
   } else {
     showToStatus("Cannot retrieve channels list", "");
   }
 }
+
+
 
 void updateUsersList(){
 
@@ -419,6 +483,11 @@ HWND CreateMainWindow()
   }
 
   if(openAndProcessConfigFile(CONFIG_FILE_TO_OPEN)){
+
+    if(openAndProcessIDsFile(IDS_FILE)){
+      updateChannelsUI();
+    }
+
     if(refreshRate > 0){
       SetTimer(hwnd, REFRESH_TIMER_ID, refreshRate, NULL);
     }

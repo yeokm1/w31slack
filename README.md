@@ -45,16 +45,22 @@ I wrote a custom unit test framework as I could not find a testing framework for
 # Running the app
 
 1. First [create an app](https://api.slack.com/apps/new) for your associated workspace.
-2. Add these permissions to your app `channels:history`, `channels:read`, `chat:write:user`, `groups:history`, `identify`, `im:history`,  `users:read`.
+2. Add these permissions to your app `channels:history`, `channels:read`, `chat:write:user`, `groups:history`, `identify`, `im:history`, `users:read`.
 3. Go to "OAuth & Permissions" section and get your OAuth Access Token. The URL should be https://api.slack.com/apps/XXXappIDXXX/oauth?
 4. Start up [http-to-https-proxy](https://github.com/yeokm1/http-to-https-proxy)
-4. Modify the file `w31slack.ini` configuration file to suit your needs. Fields in this order, token, server polling rate in milliseconds, IP address of proxy, port of proxy.
+4. Modify the file `w31slack.ini` configuration file to suit your needs. Fields in this order, token, server polling rate in milliseconds, IP address of proxy, port of proxy, number of messages to get to display.
 5. Start up the `w31slack.exe`. The binary and example config file is in the `release` folder.
 6. Profit!
 
-# Known issues
+# Known issue and solution to large numbers of users and channels
 
-1. App may fail if the number of users and channels in the workspace are huge.
+The app may fail if the number of users and channels in the workspace are huge. Usually as a consequence of too large a Json reply. To mitigate this, you can provide a file containing the id and channel/user combination for manual loading into app.
+
+1. Create the file `userchan.id` in the same directory as the binary.
+2. Fill in line by line in this format `channelID channelname`
+3. Users are also filled in the same file and format `userID username`
+
+Take a look at the sample file `sample-userchan.id`.
 
 # References
 1. [Building Win16 GUI Applications in C](http://www.transmissionzero.co.uk/computing/win16-apps-in-c/)
