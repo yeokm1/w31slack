@@ -40,7 +40,7 @@ typedef struct
 
 
 void jsnparse_parseChannelList(LPSTR response, DWORD length, ChannelList * list);
-void jsnparse_parseMessageList(LPSTR response, DWORD length, MessageList * list);
+void jsnparse_parseMessageList(LPSTR response, DWORD length, MessageList * list, int maxMessagesToParse);
 void jsnparse_parseUserList(LPSTR response, DWORD length, UserList * list);
 
 void jsnparse_freeChannelList(ChannelList * list);

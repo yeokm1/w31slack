@@ -17,6 +17,8 @@
 #define TOKEN_LENGTH_MAX 90
 #define IP_MAX 20
 
+#define MAX_MESSAGES_TO_PARSE 10
+
 #define MAX_GLOBAL_MEM_ALLOCATION 32000
 
 #define SINGLE_SHOT_TIMER_ID 4
@@ -184,7 +186,7 @@ void updateChannelMessages(){
 
   if(bytesReceived > 0){
     jsnparse_freeMessagesList(&messagesList);
-    jsnparse_parseMessageList(lpGlobalMemory, bytesReceived, &messagesList);
+    jsnparse_parseMessageList(lpGlobalMemory, bytesReceived, &messagesList, MAX_MESSAGES_TO_PARSE);
 
     SendMessage(GetDlgItem(hwnd, LIST_BOX_ID), LB_RESETCONTENT, 0, 0);
 

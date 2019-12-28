@@ -54,15 +54,7 @@ I wrote a custom unit test framework as I could not find a testing framework for
 
 # Known issues
 
-1. The number of JSON tokens parsed by JSMN is limited to 256 due to memory issues. This limits everything from the number of users, channels and messages that can be processed and displayed.
-
-2. It's unknown why the app runs on WFW 3.11, Win 2000 but fails to get users and crashes on Win 10 32-bit.
-
-3. App seems to work when compiled under Debug mode but crashes on Release mode.
-
-3. App may crash on General Protection Fault when first launched on a newly-booted system. Start the app the second time and it should be ok.
-
-4. Resolving the user ids to nicknames was recently added but causes above 3 issues. Otherwise, still ok.
+1. App may fail if the number of users and channels in the workspace are huge.
 
 # References
 1. [Building Win16 GUI Applications in C](http://www.transmissionzero.co.uk/computing/win16-apps-in-c/)

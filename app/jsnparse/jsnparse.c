@@ -4,8 +4,6 @@
 #include "jsmn.h"
 #include "stdio.h"
 
-#define MAX_TOKENS 256
-
 //Jump straight to the Json portion skipping the HTTP content
 static void jsnparse_getStartOfJson(LPSTR response, DWORD responseLength, LPSTR * startPosition, DWORD * lengthOfJson){
     DWORD index;
@@ -40,55 +38,69 @@ static char * jsnparse_extractStringOfThisToken(LPSTR startOfJson, jsmntok_t * c
     return output;
 }
 
-void jsnparse_parseMessageList(LPSTR response, DWORD length, MessageList * list){
+static LPSTR jsnparse_extractThisTokenAndNextFew(LPSTR jsonStart, DWORD length, char * keyString, jsmntok_t * tokens, int totalTokens){
+    
     jsmn_parser parser;
-    jsmntok_t tokens[MAX_TOKENS];
-    int index;
+    
+    LPSTR firstInstance;
+    firstInstance = _fstrstr(jsonStart, keyString);
+
+    if(firstInstance != NULL){
+
+        //To protect against the case that the first instance has exceed the bounds. Possible if the memory is not cleared.
+        if((DWORD) (firstInstance - jsonStart) > length){
+            return NULL;
+        }
+
+        jsmn_init(&parser);
+        jsmn_parse(&parser, firstInstance, length - (firstInstance - jsonStart), tokens, totalTokens);
+    }
+
+    return firstInstance;
+}
+
+void jsnparse_parseMessageList(LPSTR response, DWORD length, MessageList * list, int maxMessagesToParse){
+
     LPSTR startOfJson;
     DWORD lengthOfJson;
 
-    char * currentTokenString;
-    char * currentTokenStringp2;
+    LPSTR startOfNextSubstring;
+    char * tokenString;
+    jsmntok_t tokens[4];
 
     jsnparse_getStartOfJson(response, length, &startOfJson, &lengthOfJson);
 
-    jsmn_init(&parser);
-    jsmn_parse(&parser, startOfJson, lengthOfJson, tokens, MAX_TOKENS);
+    startOfNextSubstring = startOfJson;
     list->numMessages = 0;
 
-    //First pass to determine number of channels there are
-    for(index = 0; index < MAX_TOKENS; index++){
+    while((startOfNextSubstring = jsnparse_extractThisTokenAndNextFew(startOfNextSubstring, lengthOfJson - (startOfNextSubstring - startOfJson), "\"text\":", tokens, 4)) != NULL){
 
-        currentTokenString = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index]);
-
-        if(strcmp("text", currentTokenString) == 0){
-
-            //Verify that the message ID and name does not exceed the tokens we have
-            if(((index + 1) < MAX_TOKENS) && ((index + 3) < MAX_TOKENS)){
-
-                //Make sure [index + 2] token is "user" as "text" and "user" must come in a pair
-                currentTokenStringp2 = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index + 2]);
-
-                if(strcmp("user", currentTokenStringp2) == 0){
-
-                    list->messages = (Message * ) realloc(list->messages, (list->numMessages + 1) * sizeof(Message));
-
-                    list->messages[list->numMessages].message = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index + 1]);
-                    list->messages[list->numMessages].userID = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index + 3]);
-
-                    list->numMessages++;
-                }
-
-                free(currentTokenStringp2);
-                
-            }
-
+        if(startOfNextSubstring == NULL){
+            break;
         }
-        free(currentTokenString);
+
+        if(list->numMessages >= maxMessagesToParse){
+            break;
+        }
+
+        tokenString = jsnparse_extractStringOfThisToken(startOfNextSubstring, &tokens[2]);
+
+        if(strcmp("user", tokenString) == 0){
+
+            list->messages = (Message * ) realloc(list->messages, (list->numMessages + 1) * sizeof(Message));
+
+            list->messages[list->numMessages].message = jsnparse_extractStringOfThisToken(startOfNextSubstring, &tokens[1]);
+            list->messages[list->numMessages].userID = jsnparse_extractStringOfThisToken(startOfNextSubstring, &tokens[3]);
+
+            list->numMessages++;
+        }
+
+        //Start the next iteration away from the current position. +1 is sufficient to not include the current token
+        startOfNextSubstring = startOfNextSubstring + 1;
+
+        free(tokenString);
     }
 }
-
-
 
 void jsnparse_freeMessagesList(MessageList * list){
     int index;
@@ -103,55 +115,44 @@ void jsnparse_freeMessagesList(MessageList * list){
     list->numMessages = 0;
 }
 
-
 void jsnparse_parseChannelList(LPSTR response, DWORD length, ChannelList * list){
-    jsmn_parser parser;
-    jsmntok_t tokens[MAX_TOKENS];
-    int index;
+
     LPSTR startOfJson;
     DWORD lengthOfJson;
 
-    char * currentTokenString;
-    char * currentTokenStringp2;
+    LPSTR startOfNextSubstring;
+    char * tokenString;
+    jsmntok_t tokens[4];
 
     jsnparse_getStartOfJson(response, length, &startOfJson, &lengthOfJson);
 
-    jsmn_init(&parser);
-    jsmn_parse(&parser, startOfJson, lengthOfJson, tokens, MAX_TOKENS);
+    startOfNextSubstring = startOfJson;
     list->numChannels = 0;
 
-    //First pass to determine number of channels there are
-    for(index = 0; index < MAX_TOKENS; index++){
+    while((startOfNextSubstring = jsnparse_extractThisTokenAndNextFew(startOfNextSubstring, lengthOfJson - (startOfNextSubstring - startOfJson), "\"id\":", tokens, 4)) != NULL){
 
-        currentTokenString = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index]);
-
-        if(strcmp("id", currentTokenString) == 0){
-
-            //Verify that the channel ID and name does not exceed the tokens we have
-            if(((index + 1) < MAX_TOKENS) && ((index + 3) < MAX_TOKENS)){
-
-                //Make sure [index + 2] token is "name" as "id" and "name" must come in a pair
-                currentTokenStringp2 = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index + 2]);
-
-                if(strcmp("name", currentTokenStringp2) == 0){
-
-                    list->channels = (Channel * ) realloc(list->channels, (list->numChannels + 1) * sizeof(Channel));
-
-                    list->channels[list->numChannels].channelID = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index + 1]);
-                    list->channels[list->numChannels].channelName = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index + 3]);
-
-                    list->numChannels++;
-                }
-
-                free(currentTokenStringp2);
-                
-            }
-
+        if(startOfNextSubstring == NULL){
+            break;
         }
-        free(currentTokenString);
+
+        tokenString = jsnparse_extractStringOfThisToken(startOfNextSubstring, &tokens[2]);
+
+        if(strcmp("name", tokenString) == 0){
+
+            list->channels = (Channel * ) realloc(list->channels, (list->numChannels + 1) * sizeof(Channel));
+
+            list->channels[list->numChannels].channelID = jsnparse_extractStringOfThisToken(startOfNextSubstring, &tokens[1]);
+            list->channels[list->numChannels].channelName = jsnparse_extractStringOfThisToken(startOfNextSubstring, &tokens[3]);
+
+            list->numChannels++;
+        }
+
+        //Start the next iteration away from the current position. +1 is sufficient to not include the current token
+        startOfNextSubstring = startOfNextSubstring + 1;
+
+        free(tokenString);
     }
 }
-
 
 void jsnparse_freeChannelList(ChannelList * list){
     int index;
@@ -167,53 +168,43 @@ void jsnparse_freeChannelList(ChannelList * list){
 }
 
 void jsnparse_parseUserList(LPSTR response, DWORD length, UserList * list){
-    jsmn_parser parser;
-    jsmntok_t tokens[MAX_TOKENS];
-    int index;
+
     LPSTR startOfJson;
     DWORD lengthOfJson;
 
-    char * currentTokenString;
-    char * currentTokenStringp2;
+    LPSTR startOfNextSubstring;
+    char * tokenString;
+    jsmntok_t tokens[6];
 
     jsnparse_getStartOfJson(response, length, &startOfJson, &lengthOfJson);
 
-    jsmn_init(&parser);
-    jsmn_parse(&parser, startOfJson, lengthOfJson, tokens, MAX_TOKENS);
+    startOfNextSubstring = startOfJson;
     list->numUsers = 0;
 
-    //First pass to determine number of channels there are
-    for(index = 0; index < MAX_TOKENS; index++){
+    while((startOfNextSubstring = jsnparse_extractThisTokenAndNextFew(startOfNextSubstring, lengthOfJson - (startOfNextSubstring - startOfJson), "\"id\":", tokens, 6)) != NULL){
 
-        currentTokenString = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index]);
-
-        if(strcmp("id", currentTokenString) == 0){
-
-            //Verify that the user ID and name does not exceed the tokens we have
-            if(((index + 1) < MAX_TOKENS) && ((index + 5) < MAX_TOKENS)){
-
-                //Make sure [index + 4] token is "name" as "id" and "namer" must come in a pair
-                currentTokenStringp2 = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index + 4]);
-
-                if(strcmp("name", currentTokenStringp2) == 0){
-
-                    list->users = (User * ) realloc(list->users, (list->numUsers + 1) * sizeof(User));
-
-                    list->users[list->numUsers].userID = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index + 1]);
-                    list->users[list->numUsers].username = jsnparse_extractStringOfThisToken(startOfJson, &tokens[index + 5]);
-
-                    list->numUsers++;
-                }
-
-                free(currentTokenStringp2);
-                
-            }
-
+        if(startOfNextSubstring == NULL){
+            break;
         }
-        free(currentTokenString);
+
+        tokenString = jsnparse_extractStringOfThisToken(startOfNextSubstring, &tokens[4]);
+
+        if(strcmp("name", tokenString) == 0){
+
+            list->users = (User * ) realloc(list->users, (list->numUsers + 1) * sizeof(User));
+
+            list->users[list->numUsers].userID = jsnparse_extractStringOfThisToken(startOfNextSubstring, &tokens[1]);
+            list->users[list->numUsers].username = jsnparse_extractStringOfThisToken(startOfNextSubstring, &tokens[5]);
+
+            list->numUsers++;
+        }
+
+        //Start the next iteration away from the current position. +1 is sufficient to not include the current token
+        startOfNextSubstring = startOfNextSubstring + 1;
+
+        free(tokenString);
     }
 }
-
 
 void jsnparse_freeUserList(UserList * list){
     int index;

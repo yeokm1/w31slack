@@ -15,7 +15,6 @@ BOOL test_jsnparse_parseMessageList1(){
     MessageList actualList = {NULL, 0};
     BOOL testResult = TRUE;
 
-    //There are 50 messages in the text file but due to json parsing limitations, we can only see the latest 7.
     expectedList.messages = (Message *) malloc(7 * sizeof(Message));
 
     expectedList.messages[0].message = (char *)malloc((strlen("hello") + 1) * sizeof(char));
@@ -39,6 +38,14 @@ BOOL test_jsnparse_parseMessageList1(){
     expectedList.messages[6].message = (char *)malloc((strlen("hello") + 1) * sizeof(char));
     strcpy(expectedList.messages[6].message, "hello");
 
+    expectedList.messages[7].message = (char *)malloc((strlen("hello") + 1) * sizeof(char));
+    strcpy(expectedList.messages[7].message, "hello");
+
+    expectedList.messages[8].message = (char *)malloc((strlen("hello") + 1) * sizeof(char));
+    strcpy(expectedList.messages[8].message, "hello");
+
+    expectedList.messages[9].message = (char *)malloc((strlen("hello retro test!") + 1) * sizeof(char));
+    strcpy(expectedList.messages[9].message, "hello retro test!");
 
     for(index = 0; index < 7; index++){
         expectedList.messages[index].userID = (char *)malloc((strlen("UQ2NT009J") + 1) * sizeof(char));
@@ -54,21 +61,19 @@ BOOL test_jsnparse_parseMessageList1(){
 
     fclose(outputListText);
 
-    jsnparse_parseMessageList(lpGlobalMemory, dindex, &actualList);
+    jsnparse_parseMessageList(lpGlobalMemory, dindex, &actualList, TEST_MAX_MESSAGES_TO_PARSE);
 
     if(expectedList.numMessages == actualList.numMessages){
 
         for(index = 0; index < expectedList.numMessages; index++){
             if (strcmp (expectedList.messages[index].userID, actualList.messages[index].userID) != 0){
-                printf("fail %s\n", expectedList.messages[index].userID);
+                printf("%d: Got <%s> expected <%s>\n", index, actualList.messages[index].userID, expectedList.messages[index].userID);
                 testResult = FALSE;
-                break;
             }
 
             if (strcmp (expectedList.messages[index].message, actualList.messages[index].message) != 0){
-                printf("fail %s\n", expectedList.messages[index].message);
+                printf("%d: Got <%s> expected <%s>\n", index, actualList.messages[index].message, expectedList.messages[index].message);
                 testResult = FALSE;
-                break;
             }
 
         }
@@ -94,8 +99,7 @@ BOOL test_jsnparse_parseMessageList2(){
     MessageList actualList = {NULL, 0};
     BOOL testResult = TRUE;
 
-    //There are 50 messages in the text file but due to json parsing limitations, we can only see the latest 7.
-    expectedList.messages = (Message *) malloc(7 * sizeof(Message));
+    expectedList.messages = (Message *) malloc(15 * sizeof(Message));
 
     expectedList.messages[0].message = (char *)malloc((strlen("hi from win 3.1") + 1) * sizeof(char));
     strcpy(expectedList.messages[0].message, "hi from win 3.1");
@@ -118,7 +122,6 @@ BOOL test_jsnparse_parseMessageList2(){
     expectedList.messages[6].message = (char *)malloc((strlen("Hi to <#CPV9L2UJV|random>  channel!") + 1) * sizeof(char));
     strcpy(expectedList.messages[6].message, "Hi to <#CPV9L2UJV|random>  channel!");
 
-
     for(index = 0; index < 7; index++){
         expectedList.messages[index].userID = (char *)malloc((strlen("UQ2NT009J") + 1) * sizeof(char));
         strcpy(expectedList.messages[index].userID, "UQ2NT009J");
@@ -133,21 +136,19 @@ BOOL test_jsnparse_parseMessageList2(){
 
     fclose(outputListText);
 
-    jsnparse_parseMessageList(lpGlobalMemory, dindex, &actualList);
+    jsnparse_parseMessageList(lpGlobalMemory, dindex, &actualList, TEST_MAX_MESSAGES_TO_PARSE);
 
     if(expectedList.numMessages == actualList.numMessages){
 
         for(index = 0; index < expectedList.numMessages; index++){
             if (strcmp (expectedList.messages[index].userID, actualList.messages[index].userID) != 0){
-                printf("fail %s\n", expectedList.messages[index].userID);
+                printf("%d: Got <%s> expected <%s>\n", index, actualList.messages[index].userID, expectedList.messages[index].userID);
                 testResult = FALSE;
-                break;
             }
 
             if (strcmp (expectedList.messages[index].message, actualList.messages[index].message) != 0){
-                printf("fail %s\n", expectedList.messages[index].message);
+                printf("%d: Got <%s> expected <%s>\n", index, actualList.messages[index].message, expectedList.messages[index].message);
                 testResult = FALSE;
-                break;
             }
 
         }
@@ -211,15 +212,13 @@ BOOL test_jsnparse_parseChannelList(){
 
         for(index = 0; index < expectedList.numChannels; index++){
             if (strcmp (expectedList.channels[index].channelID, actualList.channels[index].channelID) != 0){
-                printf("fail %s\n", expectedList.channels[index].channelID);
+                printf("%d: Got <%s> expected <%s>\n", index, actualList.channels[index].channelID, expectedList.channels[index].channelID);
                 testResult = FALSE;
-                break;
             }
 
             if (strcmp (expectedList.channels[index].channelName, actualList.channels[index].channelName) != 0){
-                printf("fail %s\n", expectedList.channels[index].channelName);
+                printf("%d: Got <%s> expected <%s>\n", index, actualList.channels[index].channelID, expectedList.channels[index].channelName);
                 testResult = FALSE;
-                break;
             }
 
         }
@@ -273,15 +272,13 @@ BOOL test_jsnparse_parseUserList(){
 
         for(index = 0; index < expectedList.numUsers; index++){
             if (strcmp (expectedList.users[index].userID, actualList.users[index].userID) != 0){
-                printf("fail %s\n", expectedList.users[index].userID);
+                printf("%d: Got <%s> expected <%s>\n", index, actualList.users[index].userID,  expectedList.users[index].userID);
                 testResult = FALSE;
-                break;
             }
 
             if (strcmp (expectedList.users[index].username, actualList.users[index].username) != 0){
-                printf("fail %s\n", expectedList.users[index].username);
+                printf("%d: Got <%s> expected <%s>\n", index, actualList.users[index].username, expectedList.users[index].username);
                 testResult = FALSE;
-                break;
             }
 
         }

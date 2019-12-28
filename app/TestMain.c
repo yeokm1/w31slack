@@ -39,6 +39,6 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     }
 
 
-
+    OutputDebugString("Test Ended\n");
     return 0;
 }
