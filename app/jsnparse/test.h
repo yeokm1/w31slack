@@ -11,11 +11,11 @@ BOOL test_jsnparse_parseMessageList1(){
     int index = 0;
     FILE *outputListText;
     char read;
-    MessageList expectedList = {NULL, 7};
+    MessageList expectedList = {NULL, 10};
     MessageList actualList = {NULL, 0};
     BOOL testResult = TRUE;
 
-    expectedList.messages = (Message *) malloc(7 * sizeof(Message));
+    expectedList.messages = (Message *) malloc(10 * sizeof(Message));
 
     expectedList.messages[0].message = (char *)malloc((strlen("hello") + 1) * sizeof(char));
     strcpy(expectedList.messages[0].message, "hello");
@@ -47,7 +47,7 @@ BOOL test_jsnparse_parseMessageList1(){
     expectedList.messages[9].message = (char *)malloc((strlen("hello retro test!") + 1) * sizeof(char));
     strcpy(expectedList.messages[9].message, "hello retro test!");
 
-    for(index = 0; index < 7; index++){
+    for(index = 0; index < 10; index++){
         expectedList.messages[index].userID = (char *)malloc((strlen("UQ2NT009J") + 1) * sizeof(char));
         strcpy(expectedList.messages[index].userID, "UQ2NT009J");
     }
@@ -61,7 +61,7 @@ BOOL test_jsnparse_parseMessageList1(){
 
     fclose(outputListText);
 
-    jsnparse_parseMessageList(lpGlobalMemory, dindex, &actualList, TEST_MAX_MESSAGES_TO_PARSE);
+    jsnparse_parseMessageList(lpGlobalMemory, dindex, &actualList, TEST_MAX_MESSAGES);
 
     if(expectedList.numMessages == actualList.numMessages){
 
@@ -136,7 +136,7 @@ BOOL test_jsnparse_parseMessageList2(){
 
     fclose(outputListText);
 
-    jsnparse_parseMessageList(lpGlobalMemory, dindex, &actualList, TEST_MAX_MESSAGES_TO_PARSE);
+    jsnparse_parseMessageList(lpGlobalMemory, dindex, &actualList, TEST_MAX_MESSAGES);
 
     if(expectedList.numMessages == actualList.numMessages){
 

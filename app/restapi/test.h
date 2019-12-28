@@ -57,7 +57,7 @@ static BOOL test_restapi_getChannelMessages(){
     lpGlobalMemory = GlobalAllocPtr(GMEM_MOVEABLE, TEST_MAX_GLOBAL_MEMORY_ALLOCATION);
     allocatedMemorySize = GlobalSize(GlobalPtrHandle(lpGlobalMemory));
 
-    bytesReceived = restapi_getChannelMessages(TEST_MOCK_SERVER_IP, TEST_MOCK_PROXY_SERVER_PORT, TEST_CHANNEL_ID, TEST_TOKEN, lpGlobalMemory, allocatedMemorySize);
+    bytesReceived = restapi_getChannelMessages(TEST_MOCK_SERVER_IP, TEST_MOCK_PROXY_SERVER_PORT, TEST_CHANNEL_ID, TEST_MAX_MESSAGES, TEST_TOKEN, lpGlobalMemory, allocatedMemorySize);
 
     outputGetMessage = fopen(".\\mocksvr\\ouconhis.txt", "rb");
 

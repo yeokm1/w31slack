@@ -17,8 +17,6 @@
 #define TOKEN_LENGTH_MAX 90
 #define IP_MAX 20
 
-#define MAX_MESSAGES_TO_PARSE 10
-
 #define MAX_GLOBAL_MEM_ALLOCATION 32000
 
 #define SINGLE_SHOT_TIMER_ID 4
@@ -47,6 +45,8 @@ int refreshRate = 1000;
 char ip[IP_MAX];
 int port;
 char statusText[MAX_MESSAGE_TO_SEND + 20];
+int maxMessagesToParse = 5;
+
 
 BOOL usersObtained = FALSE;
 BOOL channelsObtained = FALSE;
@@ -64,7 +64,7 @@ HBRUSH hbrush;
 
 BOOL openAndProcessConfigFile(char * filename){
   FILE * configFile;
-  char buff[6];
+  char buff[20];
 
   configFile = fopen(filename, "r");
   if(configFile == NULL){
@@ -86,6 +86,17 @@ BOOL openAndProcessConfigFile(char * filename){
 
   fgets(buff, 6, configFile);
   port = atoi(buff);
+
+  fgets(buff, 6, configFile);
+  maxMessagesToParse = atoi(buff);
+
+  fgets(buff, 20, configFile);
+  //Remove trailing newline
+  buff[strcspn(buff, "\r\n")] = '\0';
+
+  if(strcmp("resolveusers", buff) != 0){
+    usersObtained = TRUE;
+  }
 
   fclose(configFile);
 
@@ -182,11 +193,11 @@ void updateChannelMessages(){
 
   showToStatus("Updating messages from:", channelsList.channels[currentSelectedChannel].channelName);
 
-  bytesReceived = restapi_getChannelMessages(ip, port, channelsList.channels[currentSelectedChannel].channelID, token, lpGlobalMemory, allocatedMemorySize);
+  bytesReceived = restapi_getChannelMessages(ip, port, channelsList.channels[currentSelectedChannel].channelID, maxMessagesToParse, token, lpGlobalMemory, allocatedMemorySize);
 
   if(bytesReceived > 0){
     jsnparse_freeMessagesList(&messagesList);
-    jsnparse_parseMessageList(lpGlobalMemory, bytesReceived, &messagesList, MAX_MESSAGES_TO_PARSE);
+    jsnparse_parseMessageList(lpGlobalMemory, bytesReceived, &messagesList, maxMessagesToParse);
 
     SendMessage(GetDlgItem(hwnd, LIST_BOX_ID), LB_RESETCONTENT, 0, 0);
 
@@ -244,7 +255,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
       return 0;
     case WM_PAINT:
       hdc = BeginPaint(hwnd, &ps);
-      sprintf(settingsText, "Proxy %s:%d, Refresh every %dms", ip, port, refreshRate);
+      sprintf(settingsText, "Proxy %s:%d, Refresh %dms, Get %d msgs", ip, port, refreshRate, maxMessagesToParse);
 
 
       SetRect(&statusRect, 20, 357, 430, 374);

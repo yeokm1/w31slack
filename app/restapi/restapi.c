@@ -5,7 +5,7 @@
 
 #define MAX_REQUEST_SIZE 500
 #define POST_MESSAGE_FORMAT "POST /api/chat.postMessage?channel=%s&as_user=true&text=%s HTTP/1.1\r\nHost: slack.com\r\nAuthorization: Bearer %s\r\nAccept: */*\r\nConnection: close\r\n\r\n"
-#define GET_MESSAGES_FORMAT "GET /api/conversations.history?channel=%s HTTP/1.1\r\nHost: slack.com\r\nAuthorization: Bearer %s\r\nAccept: */*\r\nConnection: close\r\n\r\n"
+#define GET_MESSAGES_FORMAT "GET /api/conversations.history?channel=%s&limit=%d HTTP/1.1\r\nHost: slack.com\r\nAuthorization: Bearer %s\r\nAccept: */*\r\nConnection: close\r\n\r\n"
 #define GET_CHANNEL_LIST "GET /api/conversations.list HTTP/1.1\r\nHost: slack.com\r\nAuthorization: Bearer %s\r\nAccept: */*\r\nConnection: close\r\n\r\n"
 #define GET_USERS_LIST "GET /api/users.list HTTP/1.1\r\nHost: slack.com\r\nAuthorization: Bearer %s\r\nAccept: */*\r\nConnection: close\r\n\r\n"
 
@@ -50,12 +50,12 @@ DWORD restapi_sendMessageToChannel(char * ip, int port, char * channel, char * m
     return bytesReceived;
 }
 
-DWORD restapi_getChannelMessages(char * ip, int port, char * channel, char * token, LPSTR response, DWORD maxResponseLength){
+DWORD restapi_getChannelMessages(char * ip, int port, char * channel, int limit, char * token, LPSTR response, DWORD maxResponseLength){
     int requestLength;
     DWORD bytesReceived = 0;
     char buff[MAX_REQUEST_SIZE];
     
-    requestLength = sprintf(buff, GET_MESSAGES_FORMAT, channel, token);
+    requestLength = sprintf(buff, GET_MESSAGES_FORMAT, channel, limit, token);
 
     bytesReceived = restapi_sendRequest(ip, port, buff, requestLength, response, maxResponseLength);
 
