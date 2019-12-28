@@ -52,15 +52,23 @@ I wrote a custom unit test framework as I could not find a testing framework for
 5. Start up the `w31slack.exe`. The binary and example config file is in the `release` folder.
 6. Profit!
 
-# Known issue and solution to large numbers of users and channels
+# Workaround to large numbers of users and channels
 
-The app may fail if the number of users and channels in the workspace are huge. Usually as a consequence of too large a Json reply. To mitigate this, you can provide a file containing the id and channel/user combination for manual loading into app.
+The app may fail if the number of users and channels in the workspace are huge. That results in too large a Json reply. To mitigate this, you can provide a file containing the id and channel/user combination for manual loading into app.
 
 1. Create the file `userchan.id` in the same directory as the binary.
 2. Fill in line by line in this format `channelID channelname`
 3. Users are also filled in the same file and format `userID username`
 
 Take a look at the sample file `sample-userchan.id`.
+
+To get the IDs, you can use these curl commands to get the Json and manually populate the file.
+
+```bash
+curl -H "Authorization: Bearer xoxp-821448956678-818775000324-818797461140-4d175b4e14b948d630f195e51478bb0e" -X GET "https://slack.com/api/conversations.list"
+
+curl -H "Authorization: Bearer xoxp-821448956678-818775000324-818797461140-4d175b4e14b948d630f195e51478bb0e" -X GET "https://slack.com/api/users.list"
+```
 
 # References
 1. [Building Win16 GUI Applications in C](http://www.transmissionzero.co.uk/computing/win16-apps-in-c/)
