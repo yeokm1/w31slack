@@ -1,4 +1,4 @@
-# W31Slack
+# ![icon](images/icon.png) w31slack
 A proof-of-concept Slack client for Windows for Workgroups (WFW) 3.11 with tests. As there are no native HTTPS APIs for the ancient version of Winsock on WFW, a [HTTP-to-HTTPS proxy](https://github.com/yeokm1/http-to-https-proxy) like this one I've written is needed.
 
 ![Screen](images/wfwslack-shot.png)
