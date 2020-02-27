@@ -60,7 +60,7 @@ The app may fail if the number of users and channels in the workspace are huge. 
 2. Fill in line by line in this format `channelID channelname`
 3. Users are also filled in the same file and format `userID username`
 
-Take a look at the sample file `sample-userchan.id`.
+Take a look at the sample file `sample-userchan.ids`.
 
 To get the IDs, you can use these curl commands to get the Json and manually populate the file.
 
