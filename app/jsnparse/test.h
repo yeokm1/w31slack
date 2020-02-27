@@ -295,6 +295,176 @@ BOOL test_jsnparse_parseUserList(){
     return testResult;
 }
 
+BOOL test_jsnparse_parseUserList2(){
+
+    DWORD dindex = 0;
+    int index = 0;
+    FILE *outputListText;
+    char read;
+    UserList expectedList = {NULL, 24};
+    UserList actualList = {NULL, 0};
+    BOOL testResult = TRUE;
+
+    expectedList.users = (User *) malloc(24 * sizeof(User));
+
+    expectedList.users[0].userID = (char *)malloc((strlen("USLACKBOT") + 1) * sizeof(char));
+    expectedList.users[0].username = (char *)malloc((strlen("slackbot") + 1) * sizeof(char));
+    strcpy(expectedList.users[0].userID, "USLACKBOT");
+    strcpy(expectedList.users[0].username, "slackbot");
+
+    expectedList.users[1].userID = (char *)malloc((strlen("UCPDZ69LK") + 1) * sizeof(char));
+    expectedList.users[1].username = (char *)malloc((strlen("eric") + 1) * sizeof(char));
+    strcpy(expectedList.users[1].userID, "UCPDZ69LK");
+    strcpy(expectedList.users[1].username, "eric");
+
+    expectedList.users[2].userID = (char *)malloc((strlen("UCS75QB27") + 1) * sizeof(char));
+    expectedList.users[2].username = (char *)malloc((strlen("lori.emerson") + 1) * sizeof(char));
+    strcpy(expectedList.users[2].userID, "UCS75QB27");
+    strcpy(expectedList.users[2].username, "lori.emerson");
+
+    expectedList.users[3].userID = (char *)malloc((strlen("UCT663ZDG") + 1) * sizeof(char));
+    expectedList.users[3].username = (char *)malloc((strlen("will") + 1) * sizeof(char));
+    strcpy(expectedList.users[3].userID, "UCT663ZDG");
+    strcpy(expectedList.users[3].username, "will");
+
+    expectedList.users[4].userID = (char *)malloc((strlen("UCTLQS7B8") + 1) * sizeof(char));
+    expectedList.users[4].username = (char *)malloc((strlen("seth") + 1) * sizeof(char));
+    strcpy(expectedList.users[4].userID, "UCTLQS7B8");
+    strcpy(expectedList.users[4].username, "seth");
+
+    expectedList.users[5].userID = (char *)malloc((strlen("UGLGZ36QY") + 1) * sizeof(char));
+    expectedList.users[5].username = (char *)malloc((strlen("securabbit") + 1) * sizeof(char));
+    strcpy(expectedList.users[5].userID, "UGLGZ36QY");
+    strcpy(expectedList.users[5].username, "securabbit");
+
+    expectedList.users[6].userID = (char *)malloc((strlen("UGM6G23GU") + 1) * sizeof(char));
+    expectedList.users[6].username = (char *)malloc((strlen("cebrock106") + 1) * sizeof(char));
+    strcpy(expectedList.users[6].userID, "UGM6G23GU");
+    strcpy(expectedList.users[6].username, "cebrock106");
+
+    expectedList.users[7].userID = (char *)malloc((strlen("UGM7MKYVA") + 1) * sizeof(char));
+    expectedList.users[7].username = (char *)malloc((strlen("maya.livio") + 1) * sizeof(char));
+    strcpy(expectedList.users[7].userID, "UGM7MKYVA");
+    strcpy(expectedList.users[7].username, "maya.livio");
+
+    expectedList.users[8].userID = (char *)malloc((strlen("UGNPGE8R0") + 1) * sizeof(char));
+    expectedList.users[8].username = (char *)malloc((strlen("chris.torrence") + 1) * sizeof(char));
+    strcpy(expectedList.users[8].userID, "UGNPGE8R0");
+    strcpy(expectedList.users[8].username, "chris.torrence");
+
+    expectedList.users[9].userID = (char *)malloc((strlen("UGQALP7GD") + 1) * sizeof(char));
+    expectedList.users[9].username = (char *)malloc((strlen("striegl") + 1) * sizeof(char));
+    strcpy(expectedList.users[9].userID, "UGQALP7GD");
+    strcpy(expectedList.users[9].username, "striegl");
+
+    expectedList.users[10].userID = (char *)malloc((strlen("UGTT3MN5R") + 1) * sizeof(char));
+    expectedList.users[10].username = (char *)malloc((strlen("alexandra.wilson") + 1) * sizeof(char));
+    strcpy(expectedList.users[10].userID, "UGTT3MN5R");
+    strcpy(expectedList.users[10].username, "alexandra.wilson");
+
+    expectedList.users[11].userID = (char *)malloc((strlen("UGVNV48AH") + 1) * sizeof(char));
+    expectedList.users[11].username = (char *)malloc((strlen("williegoat") + 1) * sizeof(char));
+    strcpy(expectedList.users[11].userID, "UGVNV48AH");
+    strcpy(expectedList.users[11].username, "williegoat");
+
+    expectedList.users[12].userID = (char *)malloc((strlen("UH46D0BEH") + 1) * sizeof(char));
+    expectedList.users[12].username = (char *)malloc((strlen("theelk801") + 1) * sizeof(char));
+    strcpy(expectedList.users[12].userID, "UH46D0BEH");
+    strcpy(expectedList.users[12].username, "theelk801");
+
+    expectedList.users[13].userID = (char *)malloc((strlen("UH565HA04") + 1) * sizeof(char));
+    expectedList.users[13].username = (char *)malloc((strlen("alwi1816") + 1) * sizeof(char));
+    strcpy(expectedList.users[13].userID, "UH565HA04");
+    strcpy(expectedList.users[13].username, "alwi1816");
+
+    expectedList.users[14].userID = (char *)malloc((strlen("UHSL3KYKS") + 1) * sizeof(char));
+    expectedList.users[14].username = (char *)malloc((strlen("lauraonsale") + 1) * sizeof(char));
+    strcpy(expectedList.users[14].userID, "UHSL3KYKS");
+    strcpy(expectedList.users[14].username, "lauraonsale");
+
+    expectedList.users[15].userID = (char *)malloc((strlen("UJE8JUR41") + 1) * sizeof(char));
+    expectedList.users[15].username = (char *)malloc((strlen("shanel.wu") + 1) * sizeof(char));
+    strcpy(expectedList.users[15].userID, "UJE8JUR41");
+    strcpy(expectedList.users[15].username, "shanel.wu");
+
+    expectedList.users[16].userID = (char *)malloc((strlen("UKADKRXA5") + 1) * sizeof(char));
+    expectedList.users[16].username = (char *)malloc((strlen("kwbeam") + 1) * sizeof(char));
+    strcpy(expectedList.users[16].userID, "UKADKRXA5");
+    strcpy(expectedList.users[16].username, "kwbeam");
+
+    expectedList.users[17].userID = (char *)malloc((strlen("UMPK3H6F5") + 1) * sizeof(char));
+    expectedList.users[17].username = (char *)malloc((strlen("deke4297") + 1) * sizeof(char));
+    strcpy(expectedList.users[17].userID, "UMPK3H6F5");
+    strcpy(expectedList.users[17].username, "deke4297");
+
+    expectedList.users[18].userID = (char *)malloc((strlen("UN39C3A8N") + 1) * sizeof(char));
+    expectedList.users[18].username = (char *)malloc((strlen("malinda.dietrich") + 1) * sizeof(char));
+    strcpy(expectedList.users[18].userID, "UN39C3A8N");
+    strcpy(expectedList.users[18].username, "malinda.dietrich");
+
+    expectedList.users[19].userID = (char *)malloc((strlen("UP5SSLVQA") + 1) * sizeof(char));
+    expectedList.users[19].username = (char *)malloc((strlen("autumn.tyler") + 1) * sizeof(char));
+    strcpy(expectedList.users[19].userID, "UP5SSLVQA");
+    strcpy(expectedList.users[19].username, "autumn.tyler");
+
+    expectedList.users[20].userID = (char *)malloc((strlen("UPC7H5X09") + 1) * sizeof(char));
+    expectedList.users[20].username = (char *)malloc((strlen("amandahurtado") + 1) * sizeof(char));
+    strcpy(expectedList.users[20].userID, "UPC7H5X09");
+    strcpy(expectedList.users[20].username, "amandahurtado");
+
+    expectedList.users[21].userID = (char *)malloc((strlen("USLRMQH4Y") + 1) * sizeof(char));
+    expectedList.users[21].username = (char *)malloc((strlen("doodle_bot") + 1) * sizeof(char));
+    strcpy(expectedList.users[21].userID, "USLRMQH4Y");
+    strcpy(expectedList.users[21].username, "doodle_bot");
+
+    expectedList.users[22].userID = (char *)malloc((strlen("USXRBJDU3") + 1) * sizeof(char));
+    expectedList.users[22].username = (char *)malloc((strlen("michael.connor") + 1) * sizeof(char));
+    strcpy(expectedList.users[22].userID, "USXRBJDU3");
+    strcpy(expectedList.users[22].username, "michael.connor");
+
+    expectedList.users[23].userID = (char *)malloc((strlen("UTVU962TA") + 1) * sizeof(char));
+    expectedList.users[23].username = (char *)malloc((strlen("w31slack") + 1) * sizeof(char));
+    strcpy(expectedList.users[23].userID, "UTVU962TA");
+    strcpy(expectedList.users[23].username, "w31slack");
+
+    outputListText = fopen(".\\mocksvr\\ouusrli2.txt", "rb");
+
+    while((read = fgetc(outputListText)) != EOF){
+        lpGlobalMemory[dindex] = read;
+        dindex++;
+    }
+
+    fclose(outputListText);
+
+    jsnparse_parseUserList(lpGlobalMemory, dindex, &actualList);
+
+    if(expectedList.numUsers == actualList.numUsers){
+
+        for(index = 0; index < expectedList.numUsers; index++){
+            if (strcmp (expectedList.users[index].userID, actualList.users[index].userID) != 0){
+                printf("%d: Got <%s> expected <%s>\n", index, actualList.users[index].userID,  expectedList.users[index].userID);
+                testResult = FALSE;
+            }
+
+            if (strcmp (expectedList.users[index].username, actualList.users[index].username) != 0){
+                printf("%d: Got <%s> expected <%s>\n", index, actualList.users[index].username, expectedList.users[index].username);
+                testResult = FALSE;
+            }
+
+        }
+
+    } else {
+        testResult = FALSE;
+        printf("Not enough users expected %d, got %d\n", expectedList.numUsers, actualList.numUsers);
+    }
+
+
+    jsnparse_freeUserList(&actualList);
+    jsnparse_freeUserList(&expectedList);
+
+    return testResult;
+}
+
 BOOL test_jsnparse(){
 
     BOOL result = TRUE;
@@ -338,6 +508,15 @@ BOOL test_jsnparse(){
     } else{
         result = FALSE;
         OutputDebugString("test_jsnparse_parseUserList() failed\n");
+    }
+
+    intermediateResult = test_jsnparse_parseUserList2();
+
+    if(intermediateResult){
+        OutputDebugString("test_jsnparse_parseUserList2() passed\n");
+    } else{
+        result = FALSE;
+        OutputDebugString("test_jsnparse_parseUserList2() failed\n");
     }
 
     return result;
