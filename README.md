@@ -56,7 +56,7 @@ I wrote a custom unit test framework as I could not find a testing framework for
 
 The app may fail if the number of users and channels in the workspace are huge. That results in too large a Json reply. To mitigate this, you can provide a file containing the id and channel/user combination for manual loading into app.
 
-1. Create the file `userchan.id` in the same directory as the binary.
+1. Create the file `userchan.ids` in the same directory as the binary.
 2. Fill in line by line in this format `channelID channelname`
 3. Users are also filled in the same file and format `userID username`
 
