@@ -44,6 +44,7 @@ I wrote a custom unit test framework as I could not find a testing framework for
 
 # Running the app
 
+0. Make sure to grab the binary and sample config files from from the [release directory](release/).
 1. First [create an app](https://api.slack.com/apps/new) for your associated workspace.
 2. Add these permissions to your app `channels:history`, `channels:read`, `chat:write:user`, `groups:history`, `identify`, `im:history`, `users:read`.
 3. Go to "OAuth & Permissions" section and get your OAuth Access Token. The URL should be https://api.slack.com/apps/XXXappIDXXX/oauth?
